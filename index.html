@@ -1,0 +1,246 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Try Out Solusikuprivatles</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f3f5f8;
+  margin: 0;
+  color: #202938;
+}
+header {
+  background: #17365d;
+  color: white;
+  text-align: center;
+  padding: 24px 12px;
+}
+main {
+  max-width: 650px;
+  margin: 20px auto;
+  padding: 18px;
+}
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px #00000010;
+}
+input, select, button {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12px;
+  margin: 7px 0 14px;
+  font-size: 16px;
+  border-radius: 7px;
+}
+input, select { border: 1px solid #cbd5e1; }
+button {
+  background: #1769aa;
+  color: white;
+  border: none;
+  font-weight: bold;
+}
+.option {
+  display: block;
+  padding: 10px;
+  margin: 7px 0;
+  border: 1px solid #d9e0e8;
+  border-radius: 7px;
+}
+.option input { width: auto; margin: 0 8px 0 0; }
+.hidden { display: none; }
+.explanation {
+  background: #eef6ff;
+  padding: 10px;
+  border-radius: 7px;
+  margin-top: 8px;
+}
+footer { text-align: center; color: #64748b; padding: 20px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>SOLUSIKUPRIVATLES</h1>
+  <p>Bank Soal & Try Out Online</p>
+  <small>Belajar • Berlatih • Berprestasi</small>
+</header>
+
+<main>
+<section class="card" id="setup">
+  <h2>Mulai Try Out</h2>
+  <label for="nama">Nama siswa</label>
+  <input id="nama" placeholder="Masukkan nama siswa">
+
+  <label for="kelas">Pilih kelas</label>
+  <select id="kelas">
+    <option value="sd5">SD Kelas 5</option>
+    <option value="smp7">SMP Kelas 7</option>
+    <option value="sma10">SMA Kelas 10</option>
+  </select>
+
+  <label for="mapel">Mata pelajaran</label>
+  <select id="mapel">
+    <option value="matematika">Matematika</option>
+  </select>
+
+  <button onclick="mulai()">Mulai Mengerjakan</button>
+</section>
+
+<section class="card hidden" id="ujian">
+  <h2 id="judulUjian">Try Out</h2>
+  <p id="identitas"></p>
+  <form id="formSoal"></form>
+  <button onclick="selesai()">Selesai & Lihat Nilai</button>
+</section>
+
+<section class="card hidden" id="hasil">
+  <h2>Hasil Try Out</h2>
+  <div id="ringkasan"></div>
+  <div id="pembahasan"></div>
+  <button onclick="location.reload()">Coba Lagi</button>
+</section>
+</main>
+
+<footer>© 2026 Solusikuprivatles</footer>
+
+<script>
+const bankSoal = [
+  {
+    kelas: "sd5",
+    soal: "Berapakah hasil 125 × 4?",
+    opsi: ["400", "450", "500", "550"],
+    kunci: 2,
+    bahas: "125 × 4 = 500."
+  },
+  {
+    kelas: "sd5",
+    soal: "Hasil dari 3/4 + 1/4 adalah ...",
+    opsi: ["1/2", "1", "1 1/2", "2"],
+    kunci: 1,
+    bahas: "Penyebut sama, sehingga (3 + 1)/4 = 4/4 = 1."
+  },
+  {
+    kelas: "smp7",
+    soal: "Hasil dari -8 + 15 adalah ...",
+    opsi: ["-23", "-7", "7", "23"],
+    kunci: 2,
+    bahas: "-8 + 15 = 7."
+  },
+  {
+    kelas: "smp7",
+    soal: "Jika 3x = 21, nilai x adalah ...",
+    opsi: ["6", "7", "8", "9"],
+    kunci: 1,
+    bahas: "x = 21 ÷ 3 = 7."
+  },
+  {
+    kelas: "sma10",
+    soal: "Jika f(x) = 2x + 3, maka f(4) = ...",
+    opsi: ["8", "9", "11", "12"],
+    kunci: 2,
+    bahas: "f(4) = 2(4) + 3 = 11."
+  },
+  {
+    kelas: "sma10",
+    soal: "Nilai dari 2³ × 2² adalah ...",
+    opsi: ["16", "24", "32", "64"],
+    kunci: 2,
+    bahas: "Untuk basis sama, pangkat dijumlahkan: 2⁵ = 32."
+  }
+];
+
+let soalAktif = [];
+
+function mulai() {
+  const nama = document.getElementById("nama").value.trim();
+  const kelas = document.getElementById("kelas").value;
+
+  if (!nama) {
+    alert("Masukkan nama siswa terlebih dahulu.");
+    return;
+  }
+
+  soalAktif = bankSoal.filter(s => s.kelas === kelas);
+
+  if (!soalAktif.length) {
+    alert("Belum ada soal untuk kelas ini.");
+    return;
+  }
+
+  document.getElementById("identitas").textContent =
+    "Nama: " + nama + " | " +
+    document.getElementById("kelas").selectedOptions[0].text;
+
+  document.getElementById("judulUjian").textContent =
+    "Try Out Matematika (" + soalAktif.length + " soal)";
+
+  document.getElementById("formSoal").innerHTML =
+    soalAktif.map((s, i) => `
+      <div class="card">
+        <p><b>${i + 1}. ${s.soal}</b></p>
+        ${s.opsi.map((o, j) => `
+          <label class="option">
+            <input type="radio" name="soal${i}" value="${j}">
+            ${String.fromCharCode(65 + j)}. ${o}
+          </label>
+        `).join("")}
+      </div>
+    `).join("");
+
+  document.getElementById("setup").classList.add("hidden");
+  document.getElementById("ujian").classList.remove("hidden");
+  window.scrollTo(0, 0);
+}
+
+function selesai() {
+  let benar = 0;
+  let detail = "";
+
+  soalAktif.forEach((s, i) => {
+    const pilihan = document.querySelector(
+      `input[name="soal${i}"]:checked`
+    );
+    const jawaban = pilihan ? Number(pilihan.value) : -1;
+    const betul = jawaban === s.kunci;
+
+    if (betul) benar++;
+
+    detail += `
+      <div class="explanation">
+        <b>Soal ${i + 1}: ${betul ? "Benar" : "Belum benar"}</b>
+        <p>Kunci: ${String.fromCharCode(65 + s.kunci)}. ${s.opsi[s.kunci]}</p>
+        <p>${s.bahas}</p>
+      </div>
+    `;
+  });
+
+  const nilai = Math.round(benar / soalAktif.length * 100);
+
+  document.getElementById("ringkasan").innerHTML = `
+    <p>Nama: ${aman(document.getElementById("nama").value.trim())}</p>
+    <h3>Nilai: ${nilai} / 100</h3>
+    <p>Jawaban benar: ${benar} dari ${soalAktif.length}</p>
+    <p>Jawaban salah atau kosong: ${soalAktif.length - benar}</p>
+  `;
+
+  document.getElementById("pembahasan").innerHTML =
+    "<h3>Pembahasan</h3>" + detail;
+
+  document.getElementById("ujian").classList.add("hidden");
+  document.getElementById("hasil").classList.remove("hidden");
+  window.scrollTo(0, 0);
+}
+
+function aman(teks) {
+  const el = document.createElement("span");
+  el.textContent = teks;
+  return el.innerHTML;
+}
+</script>
+</body>
+</html>
